@@ -101,6 +101,17 @@ a.signup_button {
   border-radius:         10px;
 }
 
+#sidebar {
+	float: right;
+	width: 30%;  
+	padding: 1em;
+    background: #ffc;
+}
+
+ul#sidebar {
+	list-style-type: none;
+}
+
 footer {
   text-align: center;
   margin-top: 10px;
@@ -111,4 +122,8 @@ footer {
 
 footer nav {
   float: none;
+}
+
+.clear {
+	clear:both;
 }

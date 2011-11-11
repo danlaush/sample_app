@@ -6,7 +6,17 @@
 <ul id="sidebar" class="round">
 	<li><strong>Name: </strong><%= @user.name %></li>
 	<li><strong>URL: </strong><%= link_to user_path(@user), user_path(@user) %></li>
+	<li><strong>MP Count: </strong><%= @user.microposts.count %>
 </ul>
 
-<p>&lt;<%= @user.email %>&gt;</p>
+<div id="main">
+	<p>&lt;<%= @user.email %>&gt;</p>
+	<% unless @user.microposts.empty? %>
+		<ul id="microposts" summary="User microposts">
+			<%= render @microposts %>
+		</ul>
+		<%= will_paginate @microposts %>
+	<% end %>
+</div>
+
 

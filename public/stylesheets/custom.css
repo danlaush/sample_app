@@ -198,7 +198,6 @@ ul#microposts {
 
 ul#microposts li {
 	list-style-type:none;
-	height: 70px;
 	width: 100%;
 	clear:both;
 }

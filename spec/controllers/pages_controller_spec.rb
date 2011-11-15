@@ -7,36 +7,44 @@ describe PagesController do
 		@base_title = "Ruby on Rails Tutorial Sample App | "
 	end
 
-	describe "GET 'home'" do
+	describe "GET :home" do
 		it "should be successful" do
-			get 'home'
+			get :home
 			response.should be_success
 		end
 		
 		it "should have the right title" do
-			get 'home'
+			get :home
 			response.should have_selector('title', :content => @base_title + "Home")
 		end
 		
 		describe "for signed-in users" do
 			before(:each) do
-				@user = Factory(:user)
+				@user = test_sign_in(Factory(:user))
 				mp1 = Factory(:micropost, :user => @user, :content => "Lorem ipsum")
 				mp2 = Factory(:micropost, :user => @user, :content => "Sit amet, dolor")
 				mp3 = Factory(:micropost, :user => @user, :content => "loli gipsup")
 				@microposts = [mp1, mp2, mp3]
-			#	@microposts = [@user, second, third]
-			#	30.times do
-			#		@microposts << Factory(:micropost, :user => @user, :content => "Lorem ipsum")
-			#	end
+				
+				other_user = Factory(:user, :email => Factory.next(:email))
+				other_user.follow!(@user)
 			end
 	
 			it "should have delete links for all microposts" do
-				test_sign_in(@user)
-				get 'home'
+				get :home
 				@microposts[0..2].each do |user|
 					response.should have_selector("a", :content => "delete")
 				end
+			end
+			
+			it "should have the right follow(ing||ers) counts" do
+				get :home
+				response.should have_selector("a", 
+												:href => following_user_path(@user), 
+												:content => "0 following")
+				response.should have_selector("a", 
+												:href => followers_user_path(@user), 
+												:content => "1 follower")
 			end
 		end
 	end

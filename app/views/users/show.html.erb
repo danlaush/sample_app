@@ -7,10 +7,12 @@
 	<li><strong>Name: </strong><%= @user.name %></li>
 	<li><strong>URL: </strong><%= link_to user_path(@user), user_path(@user) %></li>
 	<li><strong>MP Count: </strong><%= @user.microposts.count %>
+	<%= render 'shared/stats' %>
 </ul>
 
 <div id="main">
 	<p>&lt;<%= @user.email %>&gt;</p>
+	<%= render 'follow_form' if signed_in? %>
 	<% unless @user.microposts.empty? %>
 		<ul id="microposts" summary="User microposts">
 			<%= render @microposts %>

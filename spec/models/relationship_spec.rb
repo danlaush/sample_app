@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: relationships
+#
+#  id          :integer         not null, primary key
+#  follower_id :integer
+#  followed_id :integer
+#  created_at  :datetime
+#  updated_at  :datetime
+#
+
 require 'spec_helper'
 
 describe Relationship do
@@ -31,6 +42,17 @@ describe Relationship do
 		
 		it "should have the right followed user" do
 			@relationship.followed.should == @followed
+		end
+	end
+	
+	describe "unfollow methods" do
+		before(:each) do
+			@relationship.save
+			@follower.destroy
+		end
+		
+		it "should destroy relationships for destroyed users" do
+			Relationship.find_by_id(@relationship.id).should be_nil
 		end
 	end
 	

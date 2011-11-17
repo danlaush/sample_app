@@ -115,6 +115,16 @@ describe UsersController do
 			response.should have_selector("span.content", :content => mp1.content)
 			response.should have_selector("span.content", :content => mp2.content)
 		end
+		
+		it "should display the user's followers and following counts" do
+			user2 = Factory(:user, :email => Factory.next(:email))
+			user2.follow!(@user)
+			get :show, :id => @user
+			response.should have_selector("a", :href => following_user_path(@user),
+                                           :content => "0 following")
+        	response.should have_selector("a", :href => followers_user_path(@user),
+                                           :content => "1 follower")
+		end
 	end
 	
 	describe "GET 'new'" do
@@ -375,7 +385,7 @@ describe UsersController do
 	end
 	
 	describe "follow pages" do
-		describe "when not  signed in" do
+		describe "when not	signed in" do
 			it "should protect 'following'" do
 				get :following, :id => 1
 				response.should redirect_to(signin_path)

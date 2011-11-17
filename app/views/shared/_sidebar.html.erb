@@ -1,0 +1,34 @@
+
+<div id="sidebar" class="round">
+	<div class="user_info">
+		<a href="<%= user_path(@user) %>">
+			<%= gravatar_for @user, :size => 30 %>
+			<span class="user_name">
+				<%= @user.name %>
+			</span>
+			<span class="microposts">
+				<%= pluralize(@user.microposts.count, "micropost") %>
+			</span>
+		</a>
+	</div>
+	<div class="stats">
+	  <table summary="User stats">
+		<tr>
+		  <td>
+			<a href="<%= following_user_path(@user) %>">
+			  <span id="following" class="stat">
+				<%= @user.following.count %> following
+			  </span>
+			</a>
+		  </td>
+		  <td>
+			<a href="<%= followers_user_path(@user) %>">
+			  <span id="followers" class="stat">
+				<%= pluralize(@user.followers.count, "follower") %>
+			  </span>
+			</a>
+		  </td>
+		</tr>
+	  </table>
+	</div>
+</div>

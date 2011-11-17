@@ -55,16 +55,21 @@ class UsersController < ApplicationController
 	end
 	
 	def following
-		@user = User.find(params[:id])
-		@title = "People " + @user.name + " is following"
-		@users = @user.following.paginate(:page => params[:page])
-		render 'show_follow'
+		show_follow(:following)
 	end
 	
 	def followers
+		show_follow(:followers)
+	end
+	
+	def show_follow(action)
 		@user = User.find(params[:id])
-		@title = "Followers of " + @user.name
-		@users = @user.followers.paginate(:page => params[:page])
+		if action == :followers then
+			@title = "Followers of " + @user.name
+		else
+			@title = "People " + @user.name + " is following"
+		end
+		@users = @user.send(action).paginate(:page => params[:page])
 		render 'show_follow'
 	end
 	

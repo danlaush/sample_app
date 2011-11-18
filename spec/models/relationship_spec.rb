@@ -8,13 +8,21 @@
 #  created_at  :datetime
 #  updated_at  :datetime
 #
+# Indexes
+#
+#  index_relationships_on_follower_id                  (follower_id)
+#  index_relationships_on_follower_id_and_followed_id  (follower_id,followed_id) UNIQUE
+#  index_relationships_on_followed_id                  (followed_id)
+#
 
 require 'spec_helper'
 
 describe Relationship do
 	before(:each) do
 		@follower = Factory(:user)
-		@followed = Factory(:user, :email => Factory.next(:email))
+		@followed = Factory(:user, 
+							:username => Factory.next(:username), 
+							:email => Factory.next(:email))
 		
 		@relationship = @follower.relationships.build(:followed_id => @followed.id)
 	end

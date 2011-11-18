@@ -5,7 +5,7 @@ describe "FriendlyForwardings" do
 		user = Factory(:user)
 		visit edit_user_path(user)
 		# automatically forwards to signin page
-		fill_in :email, :with => user.email
+		fill_in :login, :with => user.username
 		fill_in :password, :with => user.password
 		click_button
 		# automatically forwards to edit page

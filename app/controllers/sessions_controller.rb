@@ -1,10 +1,14 @@
 class SessionsController < ApplicationController
+	def index
+		render :new
+	end
+
 	def new
 		@title = "Sign in"
 	end
 	
 	def create
-		user = User.authenticate(params[:session][:email],
+		user = User.authenticate(params[:session][:login],
 								 params[:session][:password])
 		if user.nil?
 			# rerender new with errors

@@ -15,12 +15,12 @@ describe UsersController do
 		describe "for non-admin users" do
 			before(:each) do
 				@user = test_sign_in(Factory(:user))
-				second = Factory(:user, :name => "Bob", :email => "bob@example.com")
-				third = Factory(:user, :name => "Bill", :email => "bill@example.com")
+				second = Factory(:user, :username => "userBob", :email => "bob@example.com")
+				third = Factory(:user, :username => "userBill", :email => "bill@example.com")
 				
 				@users = [@user, second, third]
 				30.times do
-					@users << Factory(:user, :email => Factory.next(:email))
+					@users << Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
 				end
 			end
 			
@@ -59,13 +59,14 @@ describe UsersController do
 		
 		describe "for admin users" do
 			before(:each) do
-				@user = test_sign_in(Factory(:user, :admin => true))
-				second = Factory(:user, :name => "Bob", :email => "bob@example.com")
-				third = Factory(:user, :name => "Bill", :email => "bill@example.com")
+				@admin = Factory(:user, :username => "administrator", :email => "admin@example.com", :admin => true)
+				test_sign_in(@admin)
+				second = Factory(:user, :username => "userBob", :email => "bob@example.com")
+				third = Factory(:user, :username => "userBill", :email => "bill@example.com")
 				
-				@users = [@user, second, third]
+				@users = [@admin, second, third]
 				30.times do
-					@users << Factory(:user, :email => Factory.next(:email))
+					@users << Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
 				end
 			end
 			
@@ -95,10 +96,10 @@ describe UsersController do
 		
 		it "should have the right title" do
 			get :show, :id => @user
-			response.should have_selector("title", :content => @user.name)
+			response.should have_selector("title", :content => @user.username)
 		end
 		
-		it "should have the right username" do
+		it "should have the right user name" do
 			get :show, :id => @user
 			response.should have_selector("h1", :content => @user.name)
 		end
@@ -117,7 +118,7 @@ describe UsersController do
 		end
 		
 		it "should display the user's followers and following counts" do
-			user2 = Factory(:user, :email => Factory.next(:email))
+			user2 = Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
 			user2.follow!(@user)
 			get :show, :id => @user
 			response.should have_selector("a", :href => following_user_path(@user),
@@ -129,13 +130,18 @@ describe UsersController do
 	
 	describe "GET 'new'" do
 		it "should be successful" do
-			get 'new'
+			get :new
 			response.should be_success
 		end
 		
 		it "should have the right title" do
-			get 'new'
+			get :new
 			response.should have_selector("title", :content => "Sign up")
+		end
+		
+		it "should have a username field" do
+			get :new
+			response.should have_selector("input[name='user[username]'][type='text']")
 		end
 		
 		it "should have a name field" do
@@ -163,6 +169,7 @@ describe UsersController do
 		describe "failure" do
 			before(:each) do
 				@attr = {
+					:username => "",
 					:name => "",
 					:email => "",
 					:password => "d",
@@ -195,7 +202,8 @@ describe UsersController do
 		describe "success" do
 			before(:each) do
 				@attr = {
-					:name => "Dan",
+					:username => "danlaush",
+					:name => "Dan Laush",
 					:email => "dl@ex.com",
 					:password => "foobar",
 					:password_confirmation => "foobar"
@@ -323,7 +331,7 @@ describe UsersController do
 		
 		describe "for signed-in users" do
 			before(:each) do
-				wrong = Factory(:user, :email => "wrong@example.com")
+				wrong = Factory(:user, :username => Factory.next(:username), :email => "wrong@example.com")
 				test_sign_in(wrong)
 			end
 			
@@ -361,7 +369,7 @@ describe UsersController do
 		
 		describe "as an admin user" do
 			before(:each) do
-				@admin = Factory(:user, :email => "admin@example.com", :admin => true)
+				@admin = Factory(:user, :username => "administrator", :email => "admin@example.com", :admin => true)
 				test_sign_in(@admin)
 			end
 			
@@ -400,18 +408,18 @@ describe UsersController do
 		describe "when signed in" do
 			before(:each) do
 				@user1 = test_sign_in(Factory(:user))
-				@user2 = Factory(:user, :email => Factory.next(:email))
+				@user2 = Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
 				@user1.follow!(@user2)
 			end
 			
 			it "should show user following" do
 				get :following, :id => @user1
-				response.should have_selector("a", :href => user_path(@user2), :content => @user2.name)
+				response.should have_selector("a", :href => user_path(@user2))
 			end
 			
 			it "should show user followers" do
 				get :followers, :id => @user2
-				response.should have_selector("a", :href => user_path(@user1), :content => @user1.name)
+				response.should have_selector("a", :href => user_path(@user1))
 			end
 		end
 	end

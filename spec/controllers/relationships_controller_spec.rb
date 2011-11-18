@@ -16,7 +16,7 @@ describe RelationshipsController do
 	describe "POST 'create'" do
 		before(:each) do
 			@user1 = test_sign_in(Factory(:user))
-			@user2 = Factory(:user, :email => Factory.next(:email))
+			@user2 = Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
 		end
 		
 		it "should create a relationship using ajax" do
@@ -30,7 +30,7 @@ describe RelationshipsController do
 	describe "DELETE 'destroy'" do
 		before(:each) do
 			@user1 = test_sign_in(Factory(:user))
-			@user2 = Factory(:user, :email => Factory.next(:email))
+			@user2 = Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
 			@user1.follow!(@user2)
 			@relationship = @user1.relationships.find_by_followed_id(@user2)
 		end

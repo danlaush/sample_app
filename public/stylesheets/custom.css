@@ -133,6 +133,11 @@ div.field, div.actions {
 	margin-bottom: 10px;
 }
 
+div.field.required > label:after {
+	content: " *";
+	color: #ff0000;
+}
+
 .field_with_errors {
 	margin-top: 10px;
 	padding: 2px;
@@ -140,7 +145,12 @@ div.field, div.actions {
 	display: table;
 }
 
-.field_with_errors label {
+div.field.required div.field_with_errors label {
+	color: #fff;
+}
+
+div.field.required div.field_with_errors label:after {
+	content: " *";
 	color: #fff;
 }
 
@@ -180,6 +190,11 @@ ul.users {
 
 .users li {
 	list-style: none;
+}
+
+span.realname {
+	font-size: 85%;
+	font-color: #bbb;
 }
 
 #main {

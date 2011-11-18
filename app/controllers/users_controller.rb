@@ -10,9 +10,11 @@ class UsersController < ApplicationController
 	end
 
 	def show
-		@user = User.find(params[:id])
+		@user = User.find_by_id(params[:id]) || User.find_by_username(params[:id])
+		raise ActiveRecord::RecordNotFound if @user.nil?
+		
 		@microposts = @user.microposts.paginate(:page => params[:page], :per_page => 50)
-		@title = @user.name
+		@title = "@" + @user.username
 	end
 
 	def new

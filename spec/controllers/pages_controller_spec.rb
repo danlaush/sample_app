@@ -26,7 +26,7 @@ describe PagesController do
 				mp3 = Factory(:micropost, :user => @user, :content => "loli gipsup")
 				@microposts = [mp1, mp2, mp3]
 				
-				other_user = Factory(:user, :email => Factory.next(:email))
+				other_user = Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
 				other_user.follow!(@user)
 			end
 	

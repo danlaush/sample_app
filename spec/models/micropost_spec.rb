@@ -8,6 +8,10 @@
 #  created_at :datetime
 #  updated_at :datetime
 #
+# Indexes
+#
+#  index_microposts_on_user_id_and_created_at  (user_id,created_at)
+#
 
 require 'spec_helper'
 
@@ -53,8 +57,8 @@ describe Micropost do
 	
 	describe "from_users_followed_by" do
 		before(:each) do
-			@user2 = Factory(:user, :email => Factory.next(:email))
-			@user3 = Factory(:user, :email => Factory.next(:email))
+			@user2 = Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
+			@user3 = Factory(:user, :username => Factory.next(:username), :email => Factory.next(:email))
 			
 			@user_post = @user.microposts.create!(:content => "foo")
 			@user2_post = @user2.microposts.create!(:content => "bar")

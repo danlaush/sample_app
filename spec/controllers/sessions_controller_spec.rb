@@ -18,7 +18,7 @@ describe SessionsController do
 	describe "POST 'create'" do
 		describe "invalid signin" do
 			before(:each) do
-				@attr = { :email => "ex@ample.com", :password => "invalid" }
+				@attr = { :login => "exampleName", :password => "invalid" }
 			end
 			
 			it "should re-render the new page" do
@@ -40,7 +40,7 @@ describe SessionsController do
 			
 			before(:each) do
 				@user = Factory(:user)
-				@attr = { :email => @user.email, :password => @user.password }
+				@attr = { :login => @user.username, :password => @user.password }
 			end
 			
 			it "should sign the user in" do

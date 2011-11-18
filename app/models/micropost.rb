@@ -8,6 +8,10 @@
 #  created_at :datetime
 #  updated_at :datetime
 #
+# Indexes
+#
+#  index_microposts_on_user_id_and_created_at  (user_id,created_at)
+#
 
 class Micropost < ActiveRecord::Base
 	attr_accessible :content
@@ -30,3 +34,4 @@ class Micropost < ActiveRecord::Base
 			where("user_id IN (#{following_ids}) OR user_id = :user_id", :user_id => user)
 		end
 end
+

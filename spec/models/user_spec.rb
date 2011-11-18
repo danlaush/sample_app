@@ -10,6 +10,12 @@
 #  encrypted_password :string(255)
 #  salt               :string(255)
 #  admin              :boolean         default(FALSE)
+#  username           :string(255)
+#
+# Indexes
+#
+#  index_users_on_email     (email) UNIQUE
+#  index_users_on_username  (username) UNIQUE
 #
 
 require 'spec_helper'
@@ -20,6 +26,7 @@ describe User do
 		@attr = {
 			:name => "Example User",
 			:email => "user@example.com",
+			:username => "ExampleUser",
 			:password => "foobar",
 			:password_confirmation => "foobar"
 		}
@@ -29,20 +36,55 @@ describe User do
 		User.create!(@attr)
 	end
 	
-	it "should require a name" do
-		no_name = User.new(@attr.merge(:name => ""))
-		no_name.should_not be_valid
+	it "should require a username" do
+		no_username = User.new(@attr.merge(:username => ""))
+		no_username.should_not be_valid
 	end
 	
-	it "should require an email address" do
-		no_email = User.new(@attr.merge(:email => ""))
-		no_email.should_not be_valid
+	it "should reject usernames that are too long" do
+		long_name = "a" * 31
+		long_name_user = User.new(@attr.merge(:username => long_name))
+		long_name_user.should_not be_valid
+	end
+	
+	it "should reject duplicate usernames" do
+		# First actually put a user in the db to compare to
+		# Change test email so emails unique
+		User.create!(@attr.merge(:email => "anotherEmail@example.com"))
+		user_with_dupe_username = User.new(@attr)
+		user_with_dupe_username.should_not be_valid
+	end
+	
+	it "should accept valid usernames" do
+		usernames = %w[DanLaush DANLAUSH danlaush123 dan_laush -xXDan_LaushXx-]
+		usernames.each do |username|
+			valid_username_user = User.new(@attr.merge(:username => username))
+			valid_username_user.should be_valid
+		end
+	end
+	
+	it "should reject invalid usernames" do
+		usernames = ["%danlaush%","Dan Laush","; --mysql DROP * from BobbyTables"]
+		usernames.each do |username|
+			invalid_username_user = User.new(@attr.merge(:username => username))
+			invalid_username_user.should_not be_valid
+		end
+	end
+	
+	it "should not require a name" do
+		no_email = User.new(@attr.merge(:name => ""))
+		no_email.should be_valid
 	end
 	
 	it "should reject names that are too long" do
 		long_name = "a" * 51
 		long_name_user = User.new(@attr.merge(:name => long_name))
 		long_name_user.should_not be_valid
+	end
+	
+	it "should require an email address" do
+		no_email = User.new(@attr.merge(:email => ""))
+		no_email.should_not be_valid
 	end
 	
 	it "should accept valid email addresses" do
@@ -63,7 +105,8 @@ describe User do
 	
 	it "should reject duplicate emails" do
 		# First actually put a user in the db to compare to
-		User.create!(@attr)
+		# Change test username so usernames unique
+		User.create!(@attr.merge(:username => "anotherUser"))
 		user_with_dupe_email = User.new(@attr)
 		user_with_dupe_email.should_not be_valid
 	end
@@ -85,8 +128,8 @@ describe User do
 			short_pass.should_not be_valid
 		end
 		
-		it "should reject passwords over 30 characters" do
-			pass = "a" * 31
+		it "should reject passwords over 50 characters" do
+			pass = "a" * 51
 			long_pass = User.new(@attr.merge(:password => pass, :password_confirmation => pass))
 			long_pass.should_not be_valid
 		end
@@ -117,18 +160,18 @@ describe User do
 		end
 		
 		describe "authenticate method" do
-			it "should return nil on email/pass mismatch" do
-				wrong_pass = User.authenticate(@attr[:email], "wrongpass")
+			it "should return nil on username/pass mismatch" do
+				wrong_pass = User.authenticate(@attr[:username], "wrongpass")
 				wrong_pass.should be_nil
 			end
 			
-			it "should return nil on email not found" do
-				no_user = User.authenticate("wrong@bad.com", @attr[:password])
+			it "should return nil on username not found" do
+				no_user = User.authenticate("wrongCom", @attr[:password])
 				no_user.should be_nil
 			end
 			
 			it "should return User on correct email/pass" do
-				success = User.authenticate(@attr[:email], @attr[:password])
+				success = User.authenticate(@attr[:username], @attr[:password])
 				success.should == @user
 			end
 		end
@@ -186,12 +229,17 @@ describe User do
 			end
 			
 			it "should not include a different user's microposts" do
-				mp3 = Factory(:micropost, :user => Factory(:user, :email => Factory.next(:email)))
+				mp3 = Factory(  :micropost, 
+								:user => Factory(:user, 
+												 :username => Factory.next(:username), 
+												 :email => Factory.next(:email)))
 				@user.feed.should_not include(mp3)
 			end
 			
 			it "should include the user's followed users' microposts" do
-				followed = Factory(:user, :email => Factory.next(:email))
+				followed = Factory( :user, 
+									:username => Factory.next(:username), 
+									:email => Factory.next(:email))
 				mp3 = Factory(:micropost, :user => followed)
 				@user.follow!(followed)
 				@user.feed.should include(mp3)
@@ -255,3 +303,4 @@ describe User do
 		end
 	end
 end
+
